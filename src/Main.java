@@ -9,6 +9,6 @@ public class Main {
         System.out.println("Сумма чисел = " + (firstNumber + secondNumber) +
                 System.lineSeparator() + "Разность чисел = " + (firstNumber - secondNumber) +
                 System.lineSeparator() + "Произведение чисел = " + (firstNumber * secondNumber) +
-                System.lineSeparator() + "Разность чисел = " + ((double) firstNumber / secondNumber));
+                System.lineSeparator() + "Частное чисел = " + ((double) firstNumber / secondNumber));
     }
 }
