@@ -42,7 +42,7 @@ public class Main {
                     if (numberOfLinesInFile == 1) shortestLine = length;
                     if (length > 1024) throw new LongStringException("Line in file is too long");
                     if (length > longestLine) longestLine = length;
-                    if (length < shortestLine) ;
+                    if (length < shortestLine) shortestLine = length;
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
