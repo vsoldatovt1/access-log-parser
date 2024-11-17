@@ -3,6 +3,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,9 +14,9 @@ public class Main {
         boolean fileExists;
         boolean isDirectory;
         while (true) {
+            int numberOfYandex = 0;
+            int numberOfGoogle = 0;
             int numberOfLinesInFile = 0;
-            int shortestLine = 0;
-            int longestLine = 0;
             System.out.println("Введите путь к существующему файлу.");
             path = new Scanner(System.in).nextLine();
             file = new File(path);
@@ -36,20 +38,52 @@ public class Main {
                 FileReader fileReader = new FileReader(path);
                 BufferedReader reader = new BufferedReader(fileReader);
                 String line;
+                Pattern pattern = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+)\\s-\\s-\\s\\[(.*?)\\]\\s\"(\\w+)\\s([^\"]+)\\sHTTP/1.0\"\\s(\\d+)\\s(\\d+)\\s\"([^\"]*)\"\\s\"([^\"]*)\"");
                 while ((line = reader.readLine()) != null) {
                     numberOfLinesInFile++;
                     int length = line.length();
-                    if (numberOfLinesInFile == 1) shortestLine = length;
                     if (length > 1024) throw new LongStringException("Line in file is too long");
-                    if (length > longestLine) longestLine = length;
-                    if (length < shortestLine) shortestLine = length;
+                    Matcher matcher = pattern.matcher(line);
+                    if (matcher.find()) {
+                        String ipClient = matcher.group(1);
+                        String dateRequest = matcher.group(2);
+                        String method = matcher.group(3) + " " + matcher.group(4);
+                        String pathOfUrl = matcher.group(4);
+                        String httpCode = matcher.group(5);
+                        String responseSize = matcher.group(6);
+                        String refererPage = matcher.group(7);
+                        String userAgent = matcher.group(8);
+                        String regexForUserAgent = "\\(([^)]+)\\)";
+                        Pattern patternForUserAgent = Pattern.compile(regexForUserAgent);
+                        Matcher matcherForUserAgent = patternForUserAgent.matcher(userAgent);
+                        if (matcherForUserAgent.find()) {
+                            String[] parts = matcherForUserAgent.group(1).split(";");
+                            String[] newParts = new String[parts.length];
+                            for (int i = 0; i < parts.length; i++) {
+                                parts[i] = parts[i].replace(" ", "");
+                            }
+                            if (parts.length >= 2) {
+                                String fragment = parts[1];
+                                String[] fragmentOfSearchBot = fragment.split("/");
+                                if (fragmentOfSearchBot.length >= 2) {
+                                    String searchbot = fragmentOfSearchBot[0];
+                                    if (searchbot.equals("YandexBot")) {
+                                        numberOfYandex++;
+                                        continue;
+                                    }
+                                    if (searchbot.equals("Googlebot")) numberOfGoogle++;
+                                }
+                            }
+                        }
+                    }
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
-            System.out.println("Number of lines in file is " + numberOfLinesInFile);
-            System.out.println("Length of longest line is " + longestLine);
-            System.out.println("Length of shortest line is " + shortestLine);
+            System.out.println("Количество строк в файле равно " + numberOfLinesInFile);
+            System.out.println("Доля запросов от Yandexbot равно " + (double) numberOfYandex / numberOfLinesInFile);
+            System.out.println("Доля запросов от Googlebot равно " + (double) numberOfGoogle / numberOfLinesInFile);
+
         }
     }
 }
