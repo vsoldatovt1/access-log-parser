@@ -126,7 +126,6 @@ public class Main {
                 FileReader fileReader = new FileReader(path);
                 BufferedReader reader = new BufferedReader(fileReader);
                 String line;
-                Pattern pattern = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+)\\s-\\s-\\s\\[(.*?)\\]\\s\"(\\w+)\\s([^\"]+)\\sHTTP/1.0\"\\s(\\d+)\\s(\\d+)\\s\"([^\"]*)\"\\s\"([^\"]*)\"");
                 Statistics statistics = new Statistics();
                 while ((line = reader.readLine()) != null) {
                     numberOfLinesInFile++;
