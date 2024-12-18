@@ -135,7 +135,9 @@ public class Main {
                     System.out.println(logEntry.getMethod());
                     statistics.addEntry(logEntry);
                 }
+                System.out.println(statistics.getUrls());
                 System.out.println(statistics.getTrafficRate());
+                System.out.println(statistics.getOsStatistic());
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

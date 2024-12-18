@@ -13,7 +13,7 @@ public class UserAgent {
         Matcher matcherForUserAgent = patternForUserAgent.matcher(userAgent);
         if (matcherForUserAgent.find()) {
             os = matcherForUserAgent.group(1);
-        } else os = null;
+        } else os = "Unknown os";
 
         String regExForFirefox = ".*(?:Firefox).*";
         Pattern patternForFirefox = Pattern.compile(regExForFirefox);
@@ -58,5 +58,13 @@ public class UserAgent {
 
     public String getBrowser() {
         return browser;
+    }
+
+    @Override
+    public String toString() {
+        return "UserAgent{" +
+                "os='" + os + '\'' +
+                ", browser='" + browser + '\'' +
+                '}';
     }
 }
