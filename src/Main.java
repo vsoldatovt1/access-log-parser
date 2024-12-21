@@ -126,13 +126,14 @@ public class Main {
                     int length = line.length();
                     if (length > 1024) throw new LongStringException("Line in file is too long");
                     LogEntry logEntry = new LogEntry(line);
-                    System.out.println(logEntry.getMethod());
                     statistics.addEntry(logEntry);
                 }
                 System.out.println(statistics.getUrls());
                 System.out.println(statistics.getTrafficRate());
                 System.out.println(statistics.getBrowserStatisticByPercent());
                 System.out.println(statistics.getUrls());
+                System.out.println(statistics.getOsStatisticByPercent());
+
             } catch (IOException ex) {
                 ex.printStackTrace();
             }

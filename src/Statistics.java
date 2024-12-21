@@ -10,6 +10,9 @@ public class Statistics {
     private HashSet<String> urls;
     private HashMap<String, Integer> browserStatistic;
     private HashMap<String, Double> browserStatisticByPercent;
+    private HashMap<String, Integer> osStatistics;
+    private HashMap<String, Double> osStatisticByPercent;
+
 
 
     public Statistics() {
@@ -25,6 +28,8 @@ public class Statistics {
             put("Firefox", 0);
             put("UnknownBrowser", 0);
         }};
+        this.osStatistics = new HashMap<String,Integer>();
+
     }
 
     public void addEntry(LogEntry logEntry) {
@@ -37,7 +42,6 @@ public class Statistics {
             this.maxTime = logEntry.getDateRequest();
         }
         if (logEntry.getResponseCode() == 404) {
-            System.out.println("yes");
             urls.add(logEntry.getIpAddr());
         }
 
@@ -65,6 +69,11 @@ public class Statistics {
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Unknown browser")) {
             browserStatistic.put("UnknownBrowser", browserStatistic.get("UnknownBrowser") + 1);
         }
+
+        try { osStatistics.put(logEntry.getUserAgent().getOs(), osStatistics.get(logEntry.getUserAgent().getOs())+1); } catch (Exception e) {
+            osStatistics.put(logEntry.getUserAgent().getOs(),0);
+        }
+
     }
 
     public int getTrafficRate() {
@@ -92,5 +101,19 @@ public class Statistics {
         this.browserStatisticByPercent.put("Edge", percentOfEdge);
         this.browserStatisticByPercent.put("Unknown browsers", percentOfUnknownBrowsers);
         return this.browserStatisticByPercent;
+    }
+
+    public HashMap<String, Double> getOsStatisticByPercent() {
+        this.osStatisticByPercent = new HashMap<>();
+        int sumOfAllOs = osStatistics.get("Windows NT") + osStatistics.get("Mac OS X") + osStatistics.get("Linux") + osStatistics.get("Unknown os");
+        double percentofWindows = (double) osStatistics.get("Windows NT") / sumOfAllOs;
+        double percentOfMacOS = (double) osStatistics.get("Mac OS X") / sumOfAllOs;
+        double percentOfUnknownOS = (double) osStatistics.get("Linux") / sumOfAllOs;
+        double percentOfLinux = (double) osStatistics.get("Unknown os") / sumOfAllOs;
+        this.osStatisticByPercent.put("Windows NT",percentofWindows);
+        this.osStatisticByPercent.put("Mac OS X",percentOfMacOS);
+        this.osStatisticByPercent.put("Linux",percentOfLinux);
+        this.osStatisticByPercent.put("Unknown os",percentOfUnknownOS);
+        return osStatisticByPercent;
     }
 }
