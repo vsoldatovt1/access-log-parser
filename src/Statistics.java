@@ -8,13 +8,8 @@ public class Statistics {
     private LocalDateTime minTime;
     private LocalDateTime maxTime;
     private HashSet<String> urls;
-    private HashMap<String, Double> osStatistic;
-    private int countOfEdgeBrowser;
-    private int countOfChromeBrowser;
-    private int countOfSafariBrowser;
-    private int countOfOperaBrowser;
-    private int countOfUnknownBrowsers;
-    private int countOfFirefoxBrowser;
+    private HashMap<String, Integer> browserStatistic;
+    private HashMap<String, Double> browserStatisticByPercent;
 
 
     public Statistics() {
@@ -22,7 +17,14 @@ public class Statistics {
         this.urls = new HashSet<>();
         this.minTime = LocalDateTime.MAX;
         this.maxTime = LocalDateTime.MIN;
-        this.osStatistic = new HashMap<>();
+        this.browserStatistic = new HashMap<String, Integer>() {{
+            put("Chrome", 0);
+            put("Edge", 0);
+            put("Safari", 0);
+            put("Opera", 0);
+            put("Firefox", 0);
+            put("UnknownBrowser", 0);
+        }};
     }
 
     public void addEntry(LogEntry logEntry) {
@@ -34,34 +36,34 @@ public class Statistics {
         if (logEntry.getDateRequest().isAfter(maxTime)) {
             this.maxTime = logEntry.getDateRequest();
         }
-        if (logEntry.getResponseCode() == 200) {
+        if (logEntry.getResponseCode() == 404) {
             System.out.println("yes");
             urls.add(logEntry.getIpAddr());
         }
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Chrome")) {
-            countOfChromeBrowser++;
+            browserStatistic.put("Chrome", browserStatistic.get("Chrome") + 1);
         }
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Edge")) {
-            countOfEdgeBrowser++;
+            browserStatistic.put("Edge", browserStatistic.get("Edge") + 1);
         }
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Safari")) {
-            countOfSafariBrowser++;
+            browserStatistic.put("Safari", browserStatistic.get("Safari") + 1);
         }
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Opera")) {
-            countOfOperaBrowser++;
+            browserStatistic.put("Opera", browserStatistic.get("Opera") + 1);
         }
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Firefox")) {
-            countOfFirefoxBrowser++;
+            browserStatistic.put("Firefox", browserStatistic.get("Firefox") + 1);
         }
 
 
         if (logEntry.getUserAgent().getBrowser().equalsIgnoreCase("Unknown browser")) {
-            countOfUnknownBrowsers++;
+            browserStatistic.put("UnknownBrowser", browserStatistic.get("UnknownBrowser") + 1);
         }
     }
 
@@ -74,21 +76,21 @@ public class Statistics {
         return this.urls;
     }
 
-    public HashMap<String, Double> getOsStatistic() {
-        int sumOfAllBrowsers = countOfUnknownBrowsers + countOfOperaBrowser + countOfSafariBrowser + countOfEdgeBrowser
-                + countOfChromeBrowser + countOfFirefoxBrowser;
-        double percentOfChrome = (double) countOfChromeBrowser / sumOfAllBrowsers;
-        double percentOfFirefox = (double) countOfFirefoxBrowser / sumOfAllBrowsers;
-        double percentOfOpera = (double) countOfOperaBrowser / sumOfAllBrowsers;
-        double percentOfSafari = (double) countOfSafariBrowser / sumOfAllBrowsers;
-        double percentOfEdge = (double) countOfEdgeBrowser / sumOfAllBrowsers;
-        double percentOfUnknownBrowsers = (double) countOfUnknownBrowsers / sumOfAllBrowsers;
-        this.osStatistic.put("Chrome", percentOfChrome);
-        this.osStatistic.put("Firefox", percentOfFirefox);
-        this.osStatistic.put("Opera", percentOfOpera);
-        this.osStatistic.put("Safari", percentOfSafari);
-        this.osStatistic.put("Edge", percentOfEdge);
-        this.osStatistic.put("Unknown browsers", percentOfUnknownBrowsers);
-        return this.osStatistic;
+    public HashMap<String, Double> getBrowserStatisticByPercent() {
+        this.browserStatisticByPercent = new HashMap<>();
+        int sumOfAllBrowsers = browserStatistic.get("UnknownBrowser") + browserStatistic.get("Opera") + browserStatistic.get("Safari") + browserStatistic.get("Edge") + browserStatistic.get("Chrome") + browserStatistic.get("Firefox");
+        double percentOfChrome = (double) browserStatistic.get("Chrome") / sumOfAllBrowsers;
+        double percentOfFirefox = (double) browserStatistic.get("Firefox") / sumOfAllBrowsers;
+        double percentOfOpera = (double) browserStatistic.get("Opera") / sumOfAllBrowsers;
+        double percentOfSafari = (double) browserStatistic.get("Safari") / sumOfAllBrowsers;
+        double percentOfEdge = (double) browserStatistic.get("Edge") / sumOfAllBrowsers;
+        double percentOfUnknownBrowsers = (double) browserStatistic.get("UnknownBrowser") / sumOfAllBrowsers;
+        this.browserStatisticByPercent.put("Chrome", percentOfChrome);
+        this.browserStatisticByPercent.put("Firefox", percentOfFirefox);
+        this.browserStatisticByPercent.put("Opera", percentOfOpera);
+        this.browserStatisticByPercent.put("Safari", percentOfSafari);
+        this.browserStatisticByPercent.put("Edge", percentOfEdge);
+        this.browserStatisticByPercent.put("Unknown browsers", percentOfUnknownBrowsers);
+        return this.browserStatisticByPercent;
     }
 }
